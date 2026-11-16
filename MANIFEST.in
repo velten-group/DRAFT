@@ -1,0 +1,31 @@
+include LICENSE
+include README.md
+include pyproject.toml
+
+include docs/README_PYPI.md
+recursive-include docs *.md
+recursive-include configs *.yaml *.md
+recursive-include docs *.ipynb
+recursive-include configs/examples *.yaml
+include docs/model.png
+
+include scripts/install_simulation_r.R
+include scripts/train_reproduction.py
+recursive-include dev *.py *.md
+
+recursive-include src *.py
+recursive-include src *.yaml
+recursive-include src/draft_paired/examples *.npz *.json
+recursive-include src/draft_paired/examples *.tsv
+recursive-include src/draft_paired/R *.R
+recursive-include tests *.py *.json
+
+prune data
+prune notebook
+prune result
+prune .release-check
+
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .DS_Store
+global-exclude Thumbs.db

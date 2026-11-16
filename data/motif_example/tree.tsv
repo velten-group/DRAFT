@@ -1,0 +1,4 @@
+node_id	parent_id	stage_id
+Germline_0		0
+Germline_5	Germline_0	1
+Germline_10	Germline_5	2

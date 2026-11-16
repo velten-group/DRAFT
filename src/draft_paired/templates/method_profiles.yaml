@@ -1,0 +1,29 @@
+profiles:
+  methods:
+    paired:
+      network:
+        active_frac_tf_tg: 0.05
+        active_frac_re: 0.05
+        top_k_global: 10000
+        min_score_keep: 0.83
+        dense:
+          active_thr: 0.05
+          top_k_global: 50000
+          min_score_keep: 0.82
+      edge_cluster:
+        top_n_per_cluster: 10000
+        n_clusters: 12
+      topic:
+        top_n_per_cluster: 10000
+        n_topics: 12
+    unpaired:
+      network:
+        active_frac_tf_tg: 0.3
+        top_k_global: 50000
+        min_score_keep: 0.85
+        dense:
+          active_thr: 0.3
+          top_k_global: 50000
+          min_score_keep: 0.85
+      topic:
+        n_topics: 10

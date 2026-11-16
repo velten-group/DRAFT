@@ -1,0 +1,39 @@
+# Two user-defined lineages. The mapping order defines the alignment axes.
+config_version: 2
+ccc_result_root: result/ccc
+data:
+  rna_h5ad: data/ccc/combined_rna.h5ad
+  annotation: data/ccc/cells.tsv
+  cell_id_column: cell_id
+  cell_id_normalization: exact
+  group_column: cell_type
+  rna_layer: lognorm
+  gene_symbol_column: null  # Set a var symbol column when var_names are gene IDs.
+ccc:
+  lineage_order: [lineage1, lineage2]
+  output_dir: ${ccc_result_root}
+  score_mode: receptor_centrality
+  ccc_csv: data/ccc/ligand_receptor.csv
+  alignment_method: dtw
+  dtw_ent_w: 0.0
+  directions:
+  - sender: lineage1
+    receiver: lineage2
+  - sender: lineage2
+    receiver: lineage1
+  lineages:
+    lineage1:
+      config: prepared/lineage1/train.yaml
+      stage_groups:
+      - lineage1_stage_0
+      - lineage1_stage_1
+      - lineage1_stage_2
+      early_stage_count: 1
+    lineage2:
+      config: prepared/lineage2/train.yaml
+      stage_groups:
+      - lineage2_stage_0
+      - lineage2_stage_1
+      - lineage2_stage_2
+      early_stage_count: 1
+  save_fig: true

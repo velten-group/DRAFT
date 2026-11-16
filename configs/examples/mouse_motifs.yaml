@@ -1,0 +1,141 @@
+# Prior preparation from per-node called peaks and scanned motif sites.
+# Inputs and usage: docs/input_formats.md.
+# ATAC obs must contain cell_type/node_id, or supply data.atac_annotation.
+lineage: lineage1
+base_dir: .
+lineage_data_dir: data/raw/unpaired
+result_root: result/mouse_from_motifs
+data:
+  tf_list: ${lineage_data_dir}/unpaired_TF.tsv
+  tg_list: ${lineage_data_dir}/unpaired_TG.tsv
+  rna_h5ad: ${lineage_data_dir}/unpaired_rna.h5ad
+  rna_layer: null
+  annotation: ${lineage_data_dir}/unpaired_cell_annotation.csv
+  tree: ${lineage_data_dir}/unpaired_tree.csv
+  node_tf_scope: ${lineage_data_dir}/unpaired_node_tf_scope.tsv
+  node_tg_scope: ${lineage_data_dir}/unpaired_node_tg_scope.tsv
+  prior_score_threshold: 0.1
+  atac_h5ad: ${lineage_data_dir}/unpaired_atac.h5ad
+  stage_peaks: ${lineage_data_dir}/stage_peaks.tsv
+  genome_assembly: mm10
+  motif_instances: data/resources/mouse/motif_instances.bed.gz
+  motif_to_tf: data/resources/mouse/cisbp_motif2tf_mouse.txt
+  promoters: data/resources/mouse/Mus_musculus.GRCm38.74.TSS.5000.bed
+output_dir: ${result_root}/train
+model:
+  hidden_channels: 64
+  out_channels: 64
+  dropout_rate: 0.4
+  gat_heads: 2
+training:
+  seed: 4412
+  neg_sampling_ratio: 1.0
+  num_epochs: 600
+  lr: 2e-4
+  weight_decay: 1e-3
+  auto_lambda_smooth: true
+  lambda_smooth_init: 300.0
+  branch_weight_scales:
+  - 7.0
+  - 1.0
+  log_every: 10
+artifacts:
+  dir: ${result_root}/train/artifacts
+  filename: mouse_development_graphs.pt
+checkpoints:
+  dir: ${result_root}/model
+reproduce:
+  output_dir: ${result_root}/reproduce
+  artifact_path: ${result_root}/train/artifacts/mouse_development_graphs.pt
+  checkpoint_pattern: '*.pt'
+  save_embeddings: true
+  smoothness:
+    save_heatmap: true
+network:
+  output_dir: ${result_root}/network
+  active_frac_tf_tg: 0.3
+  top_k_global: 50000
+  min_score_keep: 0.85
+  m_min: 0
+  m_max: 5000
+  gamma: 10.0
+  eps: 1.0e-12
+  dense:
+    output_dir: ${result_root}/network_dense
+    n_interp: 4
+    sigma_time: 0.7
+    active_thr: 0.3
+    min_score_keep: 0.85
+    top_k_global: 50000
+    rescue_gamma: 10.0
+    rescue_m_min: 0
+    rescue_m_max: 5000
+    rescue_eps: 1.0e-08
+    use_one_based: false
+    keep_id_cols: true
+    add_prefix: false
+single_tf:
+  enabled: true
+  output_dir: ${result_root}/single_tf
+  tf_symbols:
+  - esrrb
+  centrality_mode: topk_sum
+  topk: 500
+  threshold: 0.5
+  min_expr_frac: 0.1
+  max_expr_frac: 0.8
+  time_for_top: 0
+  topn_tg: 50
+  user_thresh: 0.2
+  consensus:
+    enabled: false
+    time_points:
+    - 0
+    - 1
+    - 2
+    - 3
+    rank_method: geometric_mean
+    topn: 20
+edge_cluster:
+  enabled: true
+  network_dir: ${result_root}/network
+  output_dir: ${result_root}/edge_cluster
+  selection_mode: all
+  top_n_per_cluster: 10000
+  score_threshold: 0.9
+  n_clusters: 12
+  random_state: 5465
+  save_fig: true
+topic:
+  enabled: true
+  network_dir: ${result_root}/network
+  output_dir: ${result_root}/topic
+  selection_mode: all
+  top_n_per_cluster: 10000
+  score_threshold: 0.99
+  tf_list_file: ${lineage_data_dir}/${lineage}_TF.tsv
+  tg_list_file: ${lineage_data_dir}/${lineage}_TG.tsv
+  n_topics: 10
+  lda_max_iter: 200
+  lda_learning_method: batch
+  do_enrich: true
+  enrich_db: GO_Biological_Process_2021
+  enrich_organism: Mouse
+  enrich_background: network_targets
+continuous_activity:
+  enabled: true
+  network_dir: ${result_root}/network_dense
+  output_dir: ${result_root}/continuous_activity
+  tf_list:
+  - esrrb
+  sigma_time: 0.5
+pipeline:
+  output_dir: ${result_root}/pipeline
+method_profile:
+  name: methods
+config_version: 2
+application_profile: mouse_motifs
+prior_preparation:
+  enabled: true
+  method: scmtni
+  output_dir: ${result_root}/prepared_prior

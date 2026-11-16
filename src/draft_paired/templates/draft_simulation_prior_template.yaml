@@ -1,0 +1,44 @@
+# One candidate TF-TG GRN -> native scMultiSim RNA/ATAC -> DRAFT.
+lineage: simulation_from_prior
+simulation:
+  prior_grn: bundled:main_9plus3  # Replace with your own CSV/TSV file.
+  data_seeds: [101]
+  model_seeds: [0]
+  output_dir: result/simulation_from_prior
+  module_attention_beta: 0.0
+  device: cpu
+  threads: 8
+  evaluate: true
+  save_figures: true
+generator:
+  design: auto  # Select a compatible design for the supplied candidate prior.
+  output_dir: data/generated_simulation
+  rscript: null  # Search RSCRIPT, PATH, then standard Windows R locations.
+  r_library: null  # Optional R package library directory.
+  stages: 5
+  cells_per_stage: 200
+  active_fraction: 0.5
+  change_fraction: 0.1
+  tfs_per_region: 2
+  intrinsic_noise: 0.2
+  observation_depth: 1.0
+  diff_cif_fraction: 0.6
+  atac_effect: 0.8
+  cif_sigma: 0.18
+model:
+  hidden_channels: 32
+  out_channels: 32
+  dropout_rate: 0.40
+  gat_heads: 2
+training:
+  num_epochs: 600
+  lr: 0.001
+  lr_decay_start: 560
+  lr_decay_end: 800
+  final_lr: 0.0001
+  weight_decay: 1.0e-5
+  gradient_clip_norm: 1.0
+  checkpoint_selection: last
+  smooth_weight: 0.0
+  reconstruction_reduction: mean
+  log_every: 50

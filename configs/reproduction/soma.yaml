@@ -1,0 +1,28 @@
+# Train from the prepared lineage graph bundle.
+config_version: 2
+lineage: soma
+base_dir: .
+data:
+  graphs: ../graph_data/soma_graphs.pt
+output_dir: result/reproduction/soma/train
+model:
+  hidden_channels: 64
+  out_channels: 64
+  dropout_rate: 0.4
+  gat_heads: 2
+training:
+  seed: 2025
+  neg_sampling_ratio: 1.0
+  dedup_neg: true
+  num_epochs: 600
+  checkpoint_selection: best_loss
+  weight_decay: 1e-5
+  auto_lambda_smooth: true
+  lambda_smooth_init: 0.0
+  log_every: 10
+  lr: 0.0003
+  device: auto
+checkpoints:
+  dir: result/reproduction/soma/model
+reproduce:
+  output_dir: result/reproduction/soma/reproduce

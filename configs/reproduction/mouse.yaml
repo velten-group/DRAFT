@@ -1,0 +1,29 @@
+# Train from the prepared lineage graph bundle.
+config_version: 2
+lineage: mouse
+base_dir: .
+data:
+  graphs: ../graph_data/mouse_graphs.pt
+output_dir: result/reproduction/mouse/train
+model:
+  hidden_channels: 64
+  out_channels: 64
+  dropout_rate: 0.4
+  gat_heads: 2
+training:
+  seed: 4412
+  neg_sampling_ratio: 1.0
+  num_epochs: 600
+  lr: 2e-4
+  weight_decay: 1e-3
+  auto_lambda_smooth: true
+  lambda_smooth_init: 300.0
+  branch_weight_scales:
+  - 7.0
+  - 1.0
+  log_every: 10
+  device: auto
+checkpoints:
+  dir: result/reproduction/mouse/model
+reproduce:
+  output_dir: result/reproduction/mouse/reproduce

@@ -1,0 +1,120 @@
+{
+  "schema": "draft_simulation_9plus3_v1",
+  "training_uses": "observed RNA/ATAC counts and public TF-RE/RE-TG priors only",
+  "seeds": {
+    "101": {
+      "generation": {
+        "params": {
+          "design": "three modules, linear trajectory",
+          "num_tf": 50,
+          "num_genes": 200,
+          "modules": 3,
+          "times": 5,
+          "cells": 200,
+          "active_per_tg": 6,
+          "active_within": 6,
+          "candidate_inside": 9,
+          "candidate_outside": 3,
+          "change_fraction": 0.1,
+          "tfs_per_region": 2,
+          "atac_effect": 0.8,
+          "prior_extra": 0.0,
+          "intrinsic_noise": 0.2,
+          "observation_depth": 1.0,
+          "diff_cif_fraction": 0.6,
+          "cif_sigma": 0.18,
+          "do_velocity": true,
+          "seed": 101
+        }
+      },
+      "packaged_files": {
+        "inputs_101.npz": "a98876ef2d93f1688d72d8bd2d764ce864b78814ea2aaadc832595381c3c93e9",
+        "truth_101.npz": "2f874e2558300e3bbeed940f9fcae07179d7a6f78520d7477df45c6aa03d7ce2"
+      },
+      "dimensions": {
+        "stages": 5,
+        "cells_per_stage": 200,
+        "tf": 50,
+        "tg": 150,
+        "re": 900,
+        "candidate_pairs": 1800
+      }
+    },
+    "102": {
+      "generation": {
+        "params": {
+          "design": "three modules, linear trajectory",
+          "num_tf": 50,
+          "num_genes": 200,
+          "modules": 3,
+          "times": 5,
+          "cells": 200,
+          "active_per_tg": 6,
+          "active_within": 6,
+          "candidate_inside": 9,
+          "candidate_outside": 3,
+          "change_fraction": 0.1,
+          "tfs_per_region": 2,
+          "atac_effect": 0.8,
+          "prior_extra": 0.0,
+          "intrinsic_noise": 0.2,
+          "observation_depth": 1.0,
+          "diff_cif_fraction": 0.6,
+          "cif_sigma": 0.18,
+          "do_velocity": true,
+          "seed": 102
+        }
+      },
+      "packaged_files": {
+        "inputs_102.npz": "c57a33fb4a247204d25d42e344886aa59fd266a05ee53b26d5d6651e43e1990e",
+        "truth_102.npz": "b93286ebf56d2a0e9eada0e631f8afe976e66eed12cca3221aad898fda7557d6"
+      },
+      "dimensions": {
+        "stages": 5,
+        "cells_per_stage": 200,
+        "tf": 50,
+        "tg": 150,
+        "re": 900,
+        "candidate_pairs": 1800
+      }
+    },
+    "103": {
+      "generation": {
+        "params": {
+          "design": "three modules, linear trajectory",
+          "num_tf": 50,
+          "num_genes": 200,
+          "modules": 3,
+          "times": 5,
+          "cells": 200,
+          "active_per_tg": 6,
+          "active_within": 6,
+          "candidate_inside": 9,
+          "candidate_outside": 3,
+          "change_fraction": 0.1,
+          "tfs_per_region": 2,
+          "atac_effect": 0.8,
+          "prior_extra": 0.0,
+          "intrinsic_noise": 0.2,
+          "observation_depth": 1.0,
+          "diff_cif_fraction": 0.6,
+          "cif_sigma": 0.18,
+          "do_velocity": true,
+          "seed": 103
+        }
+      },
+      "packaged_files": {
+        "inputs_103.npz": "07c6a310db705eace36f7cfe755400c4fb1beb76ea6ca0a2a273b1396287dcff",
+        "truth_103.npz": "847c50afc8ced405b7b8492986bfdd70b9cd17c7b0736bae3a194c273e4507ab"
+      },
+      "dimensions": {
+        "stages": 5,
+        "cells_per_stage": 200,
+        "tf": 50,
+        "tg": 150,
+        "re": 900,
+        "candidate_pairs": 1800
+      }
+    }
+  }
+}

@@ -1,0 +1,110 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "draft"
+version = "0.1.0"
+description = "DRAFT workflows for paired and unpaired lineage trajectories."
+readme = { file = "docs/README_PYPI.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Zehua Zhang", email = "zehua.zhang@cos.uni-heidelberg.de" }
+]
+maintainers = [
+  { name = "Zehua Zhang", email = "zehua.zhang@cos.uni-heidelberg.de" }
+]
+keywords = ["single-cell", "graph-neural-network", "dynamic-gene-regulatory-network", "multiomics", "trajectory"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+  "pyyaml>=6.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/velten-group/DRAFT"
+Repository = "https://github.com/velten-group/DRAFT"
+Issues = "https://github.com/velten-group/DRAFT/issues"
+Documentation = "https://github.com/velten-group/DRAFT#readme"
+
+
+[project.optional-dependencies]
+paired = [
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "torch>=2.1",
+  "torch-geometric>=2.5",
+  "anndata>=0.10",
+  "scipy>=1.11",
+  "matplotlib>=3.8",
+  "scikit-learn>=1.4",
+  "networkx>=3.2",
+]
+unpaired = [
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "torch>=2.1",
+  "torch-geometric>=2.5",
+  "anndata>=0.10",
+  "scipy>=1.11",
+  "matplotlib>=3.8",
+  "scikit-learn>=1.4",
+  "networkx>=3.2",
+]
+full = [
+  "pybigtools>=0.3.0,<0.4",
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "torch>=2.1",
+  "torch-geometric>=2.5",
+  "anndata>=0.10",
+  "scipy>=1.11",
+  "matplotlib>=3.8",
+  "scikit-learn>=1.4",
+  "networkx>=3.2",
+]
+prior = ["numpy>=1.24", "pandas>=2.0", "anndata>=0.10", "scipy>=1.11", "pybigtools>=0.3.0,<0.4"]
+
+dev = [
+  "build>=1.2",
+  "pytest>=8.0",
+  "ruff>=0.6",
+  "twine>=5.1",
+  "nbformat>=5.10",
+  "nbclient>=0.10",
+  "ipykernel>=6.29",
+]
+tutorial = ["nbformat>=5.10", "nbclient>=0.10", "ipykernel>=6.29"]
+release = [
+  "build>=1.2",
+  "twine>=5.1",
+]
+enrich = [
+  "gseapy>=1.1",
+]
+
+[project.scripts]
+draft = "draft_paired.workflow_cli:main"
+draft_paired = "draft_paired.cli:main"
+draft_unpaired = "draft_unpaired.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["draft_paired*", "draft_unpaired*"]
+
+[tool.setuptools.package-data]
+draft_paired = ["templates/*.yaml", "R/*.R", "examples/simulation_9plus3/*.npz", "examples/simulation_9plus3/*.json", "examples/simulation_9plus3/*.tsv"]
+draft_unpaired = ["templates/*.yaml"]

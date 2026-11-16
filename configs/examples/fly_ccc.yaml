@@ -1,0 +1,77 @@
+# Communication analysis for the two Drosophila lineage models.
+soma_result_root: result/fly_soma
+germ_result_root: result/fly_germ
+ccc_result_root: result/ccc
+data:
+  rna_h5ad: data/raw/A_rna_focus.h5ad
+  atac_h5ad: data/raw/B_atac_focus.h5ad
+  annotation: data/raw/cell_annotation.csv
+  cell_id_column: cell_id
+  cell_id_normalization: sample_suffix
+  group_column: GEX_latent_time_bins_annotated
+  rna_layer: lognorm
+  tf_list: data/raw/TF.tsv
+  tg_list: data/raw/TG.tsv
+ccc:
+  output_dir: ${ccc_result_root}
+  score_mode: receptor_centrality
+  network_dir_soma: ${soma_result_root}/network_dense
+  network_dir_germ: ${germ_result_root}/network_dense
+  tf_annot_soma: data/raw/TF.tsv
+  tf_annot_germ: data/raw/TF.tsv
+  tg_annot_soma: data/raw/TG.tsv
+  tg_annot_germ: data/raw/TG.tsv
+  ccc_csv: data/raw/ccc.csv
+  finger_r: 20
+  norm_eps: 1.0e-08
+  alignment_method: dtw
+  dtw_ent_w: 0.0
+  dtw_band: 6
+  dtw_lam_d2: 1.0
+  dtw_n_iter: 50
+  warp_dtw_tsv: time_warp_dtw_soma_to_germ.tsv
+  ligand_min_frac: 0.05
+  receptor_gate: 0.05
+  dynamic_range_min: 0.1
+  hub_group: Hub_0
+  directions:
+  - hub_to_germline
+  - hub_to_soma
+  - soma_to_germline
+  - germline_to_soma
+  soma:
+    config: configs/examples/fly_soma.yaml
+    stage_groups:
+    - Soma_0
+    - Soma_1
+    - Soma_2
+    - Soma_3
+    - Soma_4
+    - Soma_5
+    - Soma_6
+    - Soma_7a
+    - Soma_7b
+    parallel_groups:
+    - Soma_7a
+    - Soma_7b
+    early_stage_count: 4
+  germ:
+    config: configs/examples/fly_germ.yaml
+    stage_groups:
+    - Germline_0
+    - Germline_1
+    - Germline_2
+    - Germline_3
+    - Germline_4
+    - Germline_5
+    - Germline_6
+    - Germline_7
+    - Germline_8
+    - Germline_9
+    - Germline_10
+    - Germline_11
+    - Germline_12
+    - Germline_13
+    - Germline_14
+    early_stage_count: 6
+  save_fig: true
