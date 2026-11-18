@@ -163,7 +163,11 @@ To reproduce the manuscript's downstream analyses and figures, use
 
 ## Citation
 
-If you use DRAFT, please cite the DRAFT preprint (bioRxiv; link to follow).
+If you use DRAFT, please cite:
+
+Zhang Z, Santhi Sekhar P, van Nierop y Sanchez P, Lohmann I, Velten B. DRAFT: graph-recurrent learning of
+dynamic gene regulatory networks along single-cell multi-omics trajectories. bioRxiv (2026).
+[doi:10.64898/2026.11.17.767145](https://doi.org/10.64898/2026.11.17.767145)
 
 ## License and contact
 
