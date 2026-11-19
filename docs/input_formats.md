@@ -168,9 +168,6 @@ With `--prior-source auto` (the default):
 | Only one of them | Error |
 
 `--prior-source provided` or `--prior-source motif` forces one source.
-`--min-accessible-fraction` (0–1, default 0.05) is the fraction of a node's
-cells in which a peak must be open to count at that node; it applies to
-motif-based priors and to unpaired TF-TG candidates.
 
 ### Outputs
 
@@ -185,10 +182,8 @@ motif-based priors and to unpaired TF-TG candidates.
 
 ### Settings
 
-`--set KEY=VALUE` changes a config value on any command, for example
-`--set training.num_epochs=300` on `draft preprocess` or `draft train`. To
-change several settings, edit `prepared/lineage1/inputs.yaml` and preprocess
-again from it: `draft preprocess --config prepared/lineage1/inputs.yaml --output prepared/lineage1_v2`.
+`--set KEY=VALUE` changes a config value on any command. To change several
+settings, edit `prepared/lineage1/inputs.yaml` and preprocess again from it: `draft preprocess --config prepared/lineage1/inputs.yaml --output prepared/lineage1_v2`.
 
 ## When regulatory priors are unavailable
 
@@ -231,8 +226,7 @@ draft preprocess --input-dir data/lineage1 --mode paired --genome hg38 --prior-s
 Give all three files for offline use (`--gene-annotation` is otherwise downloaded).
 
 - **Motif sites** (`.bed` or `.bed.gz`, headerless BED6): chromosome,
-  zero-based start, end, motif ID, score, strand. Change the score cutoff with
-  `--set prior_preparation.min_motif_score=VALUE`.
+  zero-based start, end, motif ID, score, strand.
 
   ```text
   chr1	100020	100032	motif_A	800	+
