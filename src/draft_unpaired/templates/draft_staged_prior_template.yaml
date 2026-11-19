@@ -2,18 +2,18 @@
 config_version: 2
 lineage: lineage1
 base_dir: .
-lineage_data_dir: data/raw/${lineage}
+lineage_data_dir: data/${lineage}
 result_root: result/${lineage}
 data:
-  tf_list: ${lineage_data_dir}/${lineage}_TF.tsv
-  tg_list: ${lineage_data_dir}/${lineage}_TG.tsv
-  rna_h5ad: ${lineage_data_dir}/${lineage}_rna.h5ad
+  rna_h5ad: ${lineage_data_dir}/rna.h5ad
   rna_layer: lognorm  # Preferred layer; falls back to X. null selects X.
-  annotation: ${lineage_data_dir}/${lineage}_cell_annotation.csv
-  tree: ${lineage_data_dir}/${lineage}_tree.csv
-  tf_tg_prior: ${lineage_data_dir}/${lineage}_tf_tg_prior_all_stages.tsv
-  node_tf_scope: ${lineage_data_dir}/${lineage}_node_tf_scope.tsv
-  node_tg_scope: ${lineage_data_dir}/${lineage}_node_tg_scope.tsv
+  annotation: ${lineage_data_dir}/rna_cells.tsv
+  tree: ${lineage_data_dir}/tree.tsv
+  tf_list: ${lineage_data_dir}/TF.tsv
+  tg_list: ${lineage_data_dir}/TG.tsv
+  tf_tg_prior: ${lineage_data_dir}/tf_tg_prior.tsv
+  node_tf_scope: ${lineage_data_dir}/node_tf_scope.tsv
+  node_tg_scope: ${lineage_data_dir}/node_tg_scope.tsv
   prior_score_threshold: 0.1
 output_dir: ${result_root}/train
 model:

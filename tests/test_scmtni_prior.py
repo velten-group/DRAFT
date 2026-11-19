@@ -103,7 +103,7 @@ def test_stage_specific_input_gene_universes_filter_before_density(tmp_path):
     ]
 
 
-def test_strict_mode_rejects_detection_proxy_and_new_example_is_packaged(tmp_path):
+def test_strict_mode_rejects_detection_proxy_and_motif_example_is_packaged(tmp_path):
     from draft_paired.utils import load_yaml_config
     from draft_unpaired.config_init import init_config
 

@@ -144,7 +144,7 @@ def test_simulation_evaluation_covers_all_candidates_without_sampling():
     assert provenance["file"] == "truth_101.npz"
 
 
-def test_main_schedule_keeps_original_560_to_800_decay():
+def test_main_schedule_decays_from_epoch_560_to_800():
     from draft_paired.simulation_training import learning_rate
 
     settings = simulation._effective_config({})["training"]

@@ -196,33 +196,33 @@ def test_renaming_preserves_training_state_and_predictions(tmp_path, branching):
         torch.set_num_threads(previous)
 
 
-def test_historical_model_names_load_identical_weights():
+def test_named_lineage_models_match_generic_models():
     from draft_paired.models import build_model, build_model_for_lineage
 
     artifacts = small_artifacts(False)
     kwargs = dict(
         in_channels=4, hidden_channels=3, out_channels=3, heads=1, dropout_rate=0
     )
-    for old_name, kind, parents in [
+    for name, kind, parents in [
         ("soma", "tree", [[], [0], [1]]),
         ("germ", "chain", [-1, 0, 1]),
     ]:
         torch.manual_seed(19)
-        old = build_model_for_lineage(old_name, **kwargs)
+        named = build_model_for_lineage(name, **kwargs)
         torch.manual_seed(19)
-        current = build_model(kind, **kwargs)
+        generic = build_model(kind, **kwargs)
         assert all(
             torch.equal(a, b)
-            for a, b in zip(old.state_dict().values(), current.state_dict().values())
+            for a, b in zip(named.state_dict().values(), generic.state_dict().values())
         )
-        old.eval()
-        current.eval()
+        named.eval()
+        generic.eval()
         with torch.no_grad():
             assert all(
                 torch.equal(a, b)
                 for a, b in zip(
-                    old(artifacts["graphs_lineage"], [0, 1, 2], parents),
-                    current(artifacts["graphs_lineage"], [0, 1, 2], parents),
+                    named(artifacts["graphs_lineage"], [0, 1, 2], parents),
+                    generic(artifacts["graphs_lineage"], [0, 1, 2], parents),
                 )
             )
 

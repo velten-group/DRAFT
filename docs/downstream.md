@@ -1,98 +1,81 @@
-# Network export and downstream analyses
+# Downstream analyses
 
-Run these after [training](../README.md#2-train), from the same `DRAFT/`
-directory. Commands use `draft_unpaired`; use `draft_paired` for a paired
-model. Paths, TF and stage names are those of the bundled example in `data/`;
-replace them with your own. If you trained with `--output result/my_run`, pass
-`result/my_run/run_config.yaml` instead of `prepared/lineage1/train.yaml`.
+Outputs and options of the commands that follow [training](../README.md#2-train).
+Each command takes the training config, `--config prepared/lineage1/train.yaml`,
+and works the same for paired and unpaired models. Paths, TF and stage names
+below are those of the example in `data/`.
 
-## Paired and unpaired outputs
+| Command | Output in `result/lineage1/` | Paired | Unpaired |
+|---|---|---|---|
+| `draft reproduce` | `reproduce/` | Embeddings per stage, temporal smoothness | Same |
+| `draft network-export` | `network/` | TF-TG edges per stage, with supporting TF-RE-TG relations | TF-TG edges per stage |
+| `draft edge-cluster` | `edge_cluster/` | Edge clusters by stage pattern | Same |
+| `draft topic` | `topic/` | Regulatory topics | Same |
+| `draft single-tf` | `single_tf/` | TF activity, target genes, regulons with supporting REs | TF activity, target genes, regulons |
+| `draft continuous-activity` | `continuous_activity/` | TF activity along interpolated time | Same |
+| `draft ccc` | `result/ccc/` | Two lineages of either mode | Same |
 
-| Command | Paired | Unpaired |
-|---|---|---|
-| `network-export` | TF-TG edges plus supporting TF-RE-TG relations | TF-TG edges |
-| `edge-cluster`, `topic` | TF-TG edges | TF-TG edges |
-| `single-tf` | TF activity, target genes and supporting REs | TF activity and target genes |
-| `ccc` | Either mode, or one of each | Either mode, or one of each |
+## `draft reproduce`
 
-## Export embeddings and networks
+Writes `embedding_<stage>_<TF|RE|TG>.txt` (paired; TF and TG for unpaired),
+the stage-by-stage distance matrix of the TF-TG networks
+(`tf_tg_prob_frobenius_dist_matrix.tsv`) and its heatmap
+(`smoothness_tf_tg_heatmap.png`).
 
-```bash
-draft_unpaired reproduce --config prepared/lineage1/train.yaml
-draft_unpaired network-export --config prepared/lineage1/train.yaml
-```
+## `draft network-export`
 
-| Output | Contents |
-|---|---|
-| `result/lineage1/reproduce/` | Embeddings, smoothness summaries and figures |
-| `result/lineage1/network/` | `t*_TF_TG.tsv`: one TF-TG edge table per stage |
+Writes `t<stage>_TF_TG.tsv`, one TF-TG edge table per stage (paired also
+`t<stage>_TF_RE_TG.tsv`), and per-stage counts of active genes and kept edges.
 
-Each stage keeps TF-TG edges scoring at least `network.min_score_keep`. If
-fewer than 1% of the stage's TF-TG pairs reach it, that stage keeps its top 1%
-instead and a warning is printed; `--set network.min_edge_fraction=0` turns
-this off (`network.dense.*` for interpolated networks).
-Paired export needs the [TG coordinates](input_formats.md#tf-and-tg-lists).
-Add `--dense` to also save interpolated networks in `result/lineage1/network_dense/`
-(DTW and continuous activity compute them in memory otherwise).
+- Each stage keeps the TF-TG edges scoring at least `network.min_score_keep`.
+  If fewer than 1% of the stage's TF-TG pairs reach it, that stage keeps its
+  top 1% instead and a warning is printed; `--set network.min_edge_fraction=0`
+  turns this off (`network.dense.*` for interpolated networks).
+- `--dense` also saves interpolated networks in `network_dense/`
+  (`draft ccc` and `draft continuous-activity` compute them in memory otherwise).
+- Paired export needs the [TG coordinates](input_formats.md#tf-and-tg-lists).
 
-## Cluster edges and regulatory topics
+## `draft edge-cluster` and `draft topic`
 
-```bash
-draft_unpaired edge-cluster --config prepared/lineage1/train.yaml
-draft_unpaired topic --config prepared/lineage1/train.yaml
-```
-
-Both read `result/lineage1/network/`.
+Both read `network/`.
 
 | Output | Main files |
 |---|---|
-| `result/lineage1/edge_cluster/` | `edge_clusters_*.csv` (edge → cluster), stage-pattern tables, TF/TG summaries, figures |
-| `result/lineage1/topic/` | `topic_x_cluster_lda.csv`, `topic_x_cluster_prop_lda.csv`, figures |
+| `edge_cluster/` | `edge_clusters_*.csv` (edge → cluster), stage-pattern tables, TF/TG summaries, figures |
+| `topic/` | `topic_x_cluster_lda.csv`, `topic_x_cluster_prop_lda.csv`, figures |
 
-**Optional enrichment.** Install `pip install -e ".[full,enrich]"`, then pass an
-organism and an [Enrichr library](https://gseapy.readthedocs.io/en/latest/gseapy_example.html#enrichr-gene-set-libraries):
+**GO enrichment of topics.** Install `pip install -e ".[full,enrich]"`, then
+pass an organism and an [Enrichr library](https://gseapy.readthedocs.io/en/latest/gseapy_example.html#enrichr-gene-set-libraries):
 
 ```bash
-draft_unpaired topic --config prepared/lineage1/train.yaml --organism Human --gene-sets GO_Biological_Process_2023
+draft topic --config prepared/lineage1/train.yaml --organism Human --gene-sets GO_Biological_Process_2023
 ```
 
-This adds `topic_T*_enrich_*.csv` and figures to `result/lineage1/topic/`.
+This adds `topic_T*_enrich_*.csv` and figures to `topic/`.
 
-## Select TFs and export regulons
+## `draft single-tf`
 
-```bash
-draft_unpaired single-tf --config prepared/lineage1/train.yaml --tf TF1 TF2 --stage stage1
-```
+`--tf` takes one or more TF IDs or gene symbols; `--stage` a node name from
+your tree. For each TF, `single_tf/` receives `<TF>_activity.tsv`,
+`<TF>_top_tg.tsv` and regulon figures.
 
-`--tf` takes IDs or gene symbols; `--stage` takes a node name from your tree.
-For each TF, `result/lineage1/single_tf/` receives `*_activity.tsv`,
-`*_top_tg.tsv` and regulon figures.
+`--consensus-stages stage1 stage2 ...` combines target evidence over these
+stages and adds `<TF>_consensus_all_targets.tsv`,
+`<TF>_consensus_top_targets.tsv`, `<TF>_consensus_stage_ranks.tsv`,
+`<TF>_consensus_regulon.png` and, for paired models,
+`<TF>_consensus_regulon_re.tsv`. To keep only targets in one edge cluster, add
+`--edge-cluster-file result/lineage1/edge_cluster/edge_clusters_<name>.csv --edge-cluster 1`.
 
-### Consensus regulons
-
-Combine target evidence over several stages:
-
-```bash
-draft_unpaired single-tf --config prepared/lineage1/train.yaml --tf TF1 --stage stage1 --consensus-stages stage1 stage2 stage3
-```
-
-This adds `*_consensus_all_targets.tsv`, `*_consensus_top_targets.tsv`,
-`*_consensus_stage_ranks.tsv`, `*_consensus_regulon.png` and, for paired
-models, `*_consensus_regulon_re.tsv`. To keep only targets in one edge cluster,
-add `--edge-cluster-file result/lineage1/edge_cluster/edge_clusters_<name>.csv --edge-cluster 1`.
-
-### TF activity over time
+## `draft continuous-activity`
 
 ```bash
-draft_unpaired continuous-activity --config prepared/lineage1/train.yaml --tf TF1 TF2
+draft continuous-activity --config prepared/lineage1/train.yaml --tf TF1 TF2
 ```
 
 Writes `multi_tf_activity.tsv` and `Figure_MultiTF_Centrality.pdf` to
-`result/lineage1/continuous_activity/`.
+`continuous_activity/`.
 
-## Compare two lineages
-
-### Inputs
+## `draft ccc`
 
 | Input | Option |
 |---|---|
@@ -100,19 +83,10 @@ Writes `multi_tf_activity.tsv` and `Figure_MultiTF_Centrality.pdf` to
 | Ligand-receptor CSV ([format](input_formats.md#communication-between-two-lineages)) | `--lr` |
 | Number of early stages in each lineage, leaving at least one later stage | `--early1`, `--early2` |
 
-RNA and cell labels are read from each training config. Ligand and receptor
-genes must be in both lineages' TG lists. Both datasets may reuse cell IDs and
-stage names.
-
-### Run DTW and CCC
-
-```bash
-draft_paired ccc --lineage1 prepared/lineage1/train.yaml --lineage2 prepared/lineage2/train.yaml --lr data/ligand_receptor.csv --early1 1 --early2 1 --output result/ccc
-```
-
-The command aligns the two network series with DTW, then scores each
-ligand-receptor pair at the aligned stages. `--name1`/`--name2` rename the
-lineages in the outputs.
+RNA and cell labels are read from each training config. Both datasets may
+reuse cell IDs and stage names. The command aligns the two network series
+with DTW, then scores each ligand-receptor pair at the aligned stages.
+`--name1`/`--name2` rename the lineages in the outputs.
 
 | Output in `result/ccc/` | Contents |
 |---|---|
@@ -120,9 +94,9 @@ lineages in the outputs.
 | `ccc_stage_alignment.tsv` | Stage-to-aligned-position mapping |
 | `ccc_curves.tsv` | Scores by direction, pair and stage |
 | `ccc_pairs.tsv` | Timing summary per pair and direction |
-| `ccc_report.json`, `run_config.yaml` | Settings and provenance; rerun with `draft_paired ccc --config result/ccc/run_config.yaml` |
+| `ccc_report.json`, `run_config.yaml` | Settings and inputs; run again with `draft ccc --config result/ccc/run_config.yaml` |
 
-### Options
+Options:
 
 - **One combined RNA file:** add `--rna data/ccc/combined_rna.h5ad --labels data/ccc/cells.tsv --groups1 L1_early L1_middle L1_late --groups2 L2_early L2_middle L2_late`,
   with groups in model stage order and different group names in the two
@@ -136,12 +110,14 @@ lineages in the outputs.
   merges `late_A` and `late_B` into one endpoint (drop the `lineage1::` prefix
   with combined RNA).
 
-## Command-line settings
+## Settings of every command
 
 `--output DIR` selects the output folder, and repeatable `--set KEY=VALUE`
 changes any config value (YAML types, for example
 `--set single_tf.save_fig=false`). The effective settings are saved as
-`run_config.yaml` in the output folder. `--help` lists each command's options.
+`run_config.yaml` in the output folder; after `draft train --output result/my_run`,
+pass `result/my_run/run_config.yaml` to the later commands in place of
+`train.yaml`. `draft <command> --help` lists each command's options.
 
 ## Interactive example
 

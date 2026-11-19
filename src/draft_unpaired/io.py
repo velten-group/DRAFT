@@ -26,23 +26,17 @@ class InputPaths:
     def from_config(cls, config: dict[str, Any]) -> "InputPaths":
         data = config.get("data", {})
         base_dir = Path(str(config.get("base_dir", "."))).expanduser().resolve()
-        lineage = str(config.get("lineage", "unpaired")).strip() or "unpaired"
+        lineage = str(config.get("lineage", "")).strip() or "lineage1"
+        folder = str(config.get("lineage_data_dir") or f"data/{lineage}")
 
-        def _resolve(key: str, *defaults: str) -> Path:
-            candidates = [str(data[key])] if key in data else [item for item in defaults if item]
-            if int(config.get("config_version", 1)) >= 2 and key not in data:
-                candidates = candidates[:1]
-            fallback: Path | None = None
-            for candidate in candidates:
-                target = (base_dir / candidate).resolve()
-                if fallback is None:
-                    fallback = target
-                if target.exists():
-                    return target
+        def _resolve(key: str, name: str) -> Path:
+            """Path from the config, or the file `name` in the lineage folder."""
+            target = (base_dir / str(data[key] if key in data else f"{folder}/{name}")).resolve()
+            if not target.exists():
                 copy = resolve_copy_suffix_path(target)
                 if copy is not None:
                     return copy.resolve()
-            return fallback if fallback is not None else base_dir.resolve()
+            return target
 
         def _resolve_optional(key: str) -> Path | None:
             raw = str(data.get(key, "")).strip()
@@ -57,23 +51,15 @@ class InputPaths:
             return None
 
         tf_filter_value = data.get("tf_filter_file")
-        tf_filter_path = _resolve("tf_filter_file", str(tf_filter_value)) if tf_filter_value else None
+        tf_filter_path = _resolve("tf_filter_file", "") if tf_filter_value else None
         return cls(
             base_dir=base_dir,
-            tf_list=_resolve("tf_list", f"data/raw/{lineage}/{lineage}_TF.tsv", "data/raw/unpaired/unpaired_TF.tsv"),
-            tg_list=_resolve("tg_list", f"data/raw/{lineage}/{lineage}_TG.tsv", "data/raw/unpaired/unpaired_TG.tsv"),
-            rna_h5ad=_resolve("rna_h5ad", f"data/raw/{lineage}/{lineage}_rna.h5ad", "data/raw/unpaired/unpaired_rna.h5ad"),
-            annotation=_resolve(
-                "annotation",
-                f"data/raw/{lineage}/{lineage}_cell_annotation.csv",
-                "data/raw/unpaired/unpaired_cell_annotation.csv",
-            ),
-            tree=_resolve("tree", f"data/raw/{lineage}/{lineage}_tree.csv", "data/raw/unpaired/unpaired_tree.csv"),
-            tf_tg_prior=_resolve(
-                "tf_tg_prior",
-                f"data/raw/{lineage}/{lineage}_tf_tg_prior_all_stages.tsv",
-                "data/raw/unpaired/unpaired_tf_tg_prior_all_stages.tsv",
-            ),
+            tf_list=_resolve("tf_list", "TF.tsv"),
+            tg_list=_resolve("tg_list", "TG.tsv"),
+            rna_h5ad=_resolve("rna_h5ad", "rna.h5ad"),
+            annotation=_resolve("annotation", "rna_cells.tsv"),
+            tree=_resolve("tree", "tree.tsv"),
+            tf_tg_prior=_resolve("tf_tg_prior", "tf_tg_prior.tsv"),
             tf_filter_file=tf_filter_path,
             node_tf_scope=_resolve_optional("node_tf_scope"),
             node_tg_scope=_resolve_optional("node_tg_scope"),

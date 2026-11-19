@@ -1,12 +1,29 @@
-"""Prepare regulatory priors, construct stage graphs and train DRAFT models."""
+"""The draft command: preprocessing, training and the downstream analyses of paired and unpaired models."""
 
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 
 from .cli_options import add_run_options, apply_overrides, command_config
 from .utils import emit_progress
+
+# Run by the paired or unpaired implementation, chosen by the config's input_mode.
+_BY_MODE = {
+    "reproduce": "Export embeddings and smoothness summaries",
+    "network-export": "Export stage-specific TF-TG networks",
+    "edge-cluster": "Cluster network edges by their stage pattern",
+    "topic": "Fit regulatory topics to the network edges",
+    "single-tf": "TF activity, target genes and regulons",
+    "continuous-activity": "TF activity along interpolated time",
+    "pipeline": "Train, then run the analyses enabled in the config",
+}
+# Accept paired and unpaired models alike.
+_SHARED = {
+    "simulation": "Train on the bundled simulated data, or simulate data from a prior",
+    "ccc": "Align two lineages (DTW) and score cell-cell communication",
+}
 
 _INPUT_OPTIONS = {
     "rna_h5ad": ("--rna", "RNA H5AD path"),
@@ -96,7 +113,57 @@ def build_parser() -> argparse.ArgumentParser:
         help="Training YAML written by preprocess, or a config with data.graphs",
     )
     add_run_options(train, "train")
+    # Listed for --help; main() passes their arguments to the paired or unpaired parser.
+    for name, help_text in {**_BY_MODE, **_SHARED}.items():
+        commands.add_parser(name, help=help_text, add_help=False)
     return parser
+
+
+def _option(argv: list[str], flag: str) -> str | None:
+    for index, item in enumerate(argv):
+        if item == flag and index + 1 < len(argv):
+            return argv[index + 1]
+        if item.startswith(f"{flag}="):
+            return item.split("=", 1)[1]
+    return None
+
+
+def _config_mode(path: str) -> str:
+    from .utils import load_yaml_config, resolve_config_path
+    from .workflow import graph_input_mode
+
+    config = load_yaml_config(path)
+    mode = config.get("input_mode")
+    graphs = config.get("data", {}).get("graphs")
+    if mode is None and graphs:
+        mode = graph_input_mode(resolve_config_path(config, graphs))
+    if mode not in {"paired", "unpaired"}:
+        raise SystemExit(
+            f"draft: {path} does not say whether the model is paired or unpaired; "
+            "add input_mode: paired or input_mode: unpaired to it."
+        )
+    return mode
+
+
+def _delegate(argv: list[str]) -> int:
+    from .cli import main as paired
+
+    command = argv[0]
+    if command == "simulation" and not (
+        _option(argv, "--config") or _option(argv, "--prior-grn")
+    ):
+        from importlib.resources import as_file, files
+
+        template = files("draft_paired") / "templates/draft_simulation_template.yaml"
+        with as_file(template) as path:
+            return paired([*argv, "--config", str(path)], prog="draft")
+    config = _option(argv, "--config")
+    if command in _BY_MODE and config and Path(config).is_file():
+        if _config_mode(config) == "unpaired":
+            from draft_unpaired.cli import main as unpaired
+
+            return unpaired(argv, prog="draft")
+    return paired(argv, prog="draft")
 
 
 def _input_config(args, parser):
@@ -168,6 +235,9 @@ def _input_config(args, parser):
 
 
 def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] in {**_BY_MODE, **_SHARED}:
+        return _delegate(argv)
     parser = build_parser()
     args = parser.parse_args(argv)
     if args.command == "init-config":

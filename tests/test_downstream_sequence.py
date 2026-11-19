@@ -1,4 +1,3 @@
-import importlib
 from pathlib import Path
 
 import pandas as pd
@@ -33,7 +32,7 @@ def test_training_outputs_feed_clustering_and_tf_regulons(tmp_path: Path, family
     prepared = preprocess_lineage(source, family, tmp_path / "prepared")
     original = Path(prepared["config_path"]).read_bytes()
     assert train_main(["train", "--config", prepared["config_path"]]) == 0
-    main = importlib.import_module(f"draft_{family}.cli").main
+    main = train_main  # draft runs the implementation named by the config's input_mode.
     for command in [
         "reproduce",
         "network-export",

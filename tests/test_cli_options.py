@@ -79,7 +79,7 @@ def test_separate_rna_inputs_allow_shared_barcodes_and_stage_names(tmp_path):
 
 
 @pytest.mark.parametrize("mode", ["paired", "unpaired"])
-def test_preprocessing_file_options_and_training_output_keep_original_configs(
+def test_preprocessing_file_options_and_training_output_leave_input_configs_unchanged(
     tmp_path, mode
 ):
     source = prepare_demo_data(tmp_path / "source", mode=mode)

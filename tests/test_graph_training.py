@@ -136,21 +136,21 @@ def test_graph_training_matches_direct_training_and_reloads_without_raw_inputs(
     assert output["out_tf"].shape == (2, 3, 3)
 
 
-def test_chain_graph_training_preserves_original_germ_training(tmp_path):
+def test_chain_graph_training_matches_germ_training(tmp_path):
     from draft_paired.train import _train_germ_artifacts, _train_tree_artifacts
 
     bundle = graph_bundle("paired")
-    cfg = settings(tmp_path / "version1", tmp_path / "unused.pt")
+    cfg = settings(tmp_path / "germ", tmp_path / "unused.pt")
     cfg["training"]["checkpoint_selection"] = "last"
     cfg["training"]["lr"] = 0.0005
-    version1 = {
+    germ_artifacts = {
         "graphs_germline": copy.deepcopy(bundle["graphs"]),
         "topo_order": [0, 1, 2],
         "parent": [-1, 0, 1],
     }
-    old = _train_germ_artifacts(version1, cfg)
-    cfg["base_dir"] = str(tmp_path / "new")
-    new = _train_tree_artifacts(
+    germ = _train_germ_artifacts(germ_artifacts, cfg)
+    cfg["base_dir"] = str(tmp_path / "tree")
+    tree = _train_tree_artifacts(
         {
             "graphs_lineage": bundle["graphs"],
             "topo_order": [0, 1, 2],
@@ -160,11 +160,11 @@ def test_chain_graph_training_preserves_original_germ_training(tmp_path):
         },
         cfg,
     )
-    old_ck = torch.load(old["checkpoint_path"], map_location="cpu", weights_only=False)
-    new_ck = torch.load(new["checkpoint_path"], map_location="cpu", weights_only=False)
+    germ_ck = torch.load(germ["checkpoint_path"], map_location="cpu", weights_only=False)
+    tree_ck = torch.load(tree["checkpoint_path"], map_location="cpu", weights_only=False)
     assert all(
-        torch.equal(value, new_ck["state_dict"][key])
-        for key, value in old_ck["model_state_dict"].items()
+        torch.equal(value, tree_ck["state_dict"][key])
+        for key, value in germ_ck["model_state_dict"].items()
     )
 
 

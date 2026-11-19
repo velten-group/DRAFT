@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -100,17 +99,6 @@ def _prob_matrix(out_tf: torch.Tensor, out_tg: torch.Tensor, time_idx: int) -> t
 
 def _strict_filename(time_idx: int) -> str:
     return f"t{time_idx:02d}_TF_TG.tsv"
-
-
-def _compat_cluster_id(time_name: str) -> str | None:
-    match = re.search(r"(\d+)$", str(time_name))
-    if match is None:
-        match = re.search(r"(\d+)", str(time_name))
-    return match.group(1) if match is not None else None
-
-
-def _compat_strict_filename(cluster_id: str) -> str:
-    return f"C{int(cluster_id)}_network.txt"
 
 
 def _dense_filename(label: str) -> str:
@@ -291,7 +279,6 @@ def _export_strict_networks(
 
     summary_rows: list[dict[str, Any]] = []
     saved_paths: list[str] = []
-    compat_paths: list[str] = []
     whitelist_mask = np.zeros(len(tf_names), dtype=bool)
     whitelist_mask[whitelist_idx] = True
 
@@ -377,26 +364,10 @@ def _export_strict_networks(
         frame.to_csv(output_path, sep="\t", index=False)
         saved_paths.append(str(output_path))
 
-        cluster_id = _compat_cluster_id(time_name)
-        compat_path_value: str | None = None
-        if cluster_id is not None:
-            compat_frame = pd.DataFrame(
-                {
-                    "TF": frame["TF_name"].astype(str),
-                    "TG": frame["TG_name"].astype(str),
-                    "Score": frame["prob"].astype(float),
-                }
-            )
-            compat_path = output_dir / _compat_strict_filename(cluster_id)
-            compat_frame.to_csv(compat_path, sep="\t", index=False)
-            compat_path_value = str(compat_path)
-            compat_paths.append(compat_path_value)
-
         summary_rows.append(
             {
                 "time_idx": int(time_idx),
                 "time_name": time_name,
-                "compat_cluster_id": cluster_id if cluster_id is not None else "",
                 "n_TF_total": int(len(tf_names)),
                 "n_TG_total": int(len(tg_names)),
                 "n_TF_whitelist": int(len(whitelist_idx)),
@@ -423,7 +394,6 @@ def _export_strict_networks(
                 "n_selected_edges": int(len(selected)),
                 "n_rescued_tf": int(rescued_tf),
                 "score_cutoff": cutoff,
-                "compat_path": compat_path_value or "",
             }
         )
 
@@ -452,7 +422,6 @@ def _export_strict_networks(
         "tf_activity_fraction_path": str(tf_frac_path),
         "tg_activity_fraction_path": str(tg_frac_path),
         "network_paths": saved_paths,
-        "compat_network_paths": compat_paths,
         "all_timepoints_empty": bool(total_selected_edges == 0),
         "total_selected_edges": total_selected_edges,
         "total_eligible_edges": total_eligible_edges,

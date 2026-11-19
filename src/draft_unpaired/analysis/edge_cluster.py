@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import copy
-import re
 from pathlib import Path
 from typing import Any
 
@@ -16,7 +15,7 @@ from ..lineage import load_tree_table
 from ..utils import load_yaml_config, resolve_config_path
 
 
-EDGE_CLUSTER_NOTEBOOK_DEFAULTS: dict[str, Any] = {
+EDGE_CLUSTER_DEFAULTS: dict[str, Any] = {
     "selection_mode": "all",
     "top_n_per_cluster": 10_000,
     "score_threshold": 0.90,
@@ -40,18 +39,13 @@ def _default_cluster_labels(config: dict[str, Any]) -> list[str] | None:
     if not tree_value:
         return None
     tree_df = load_tree_table(resolve_config_path(config, tree_value))
-    ordered = ordered_tree_table(tree_df)
-    labels: list[str] = []
-    for node_name in ordered["node_id"].astype(str).tolist():
-        match = re.search(r"(\d+)$", node_name)
-        labels.append(f"C{int(match.group(1))}" if match is not None else node_name)
-    return labels
+    return ordered_tree_table(tree_df)["node_id"].astype(str).tolist()
 
 
 def _patched_config(config: dict[str, Any]) -> dict[str, Any]:
     patched = copy.deepcopy(config)
     section = dict(_section(patched, "edge_cluster"))
-    for key, value in EDGE_CLUSTER_NOTEBOOK_DEFAULTS.items():
+    for key, value in EDGE_CLUSTER_DEFAULTS.items():
         section.setdefault(key, value)
     if section.get("celltypes") is None:
         labels = _default_cluster_labels(patched)

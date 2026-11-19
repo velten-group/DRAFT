@@ -100,3 +100,28 @@ def test_init_config_ignores_trailing_newline_differences(tmp_path: Path, monkey
     config_path.write_text(text, encoding="utf-8")
 
     assert unpaired_main(["init-config"]) == 0
+
+
+def test_draft_lists_and_forwards_downstream_commands(capsys) -> None:
+    import pytest
+
+    from draft_paired.workflow_cli import build_parser, main
+
+    help_text = build_parser().format_help()
+    for command in ("preprocess", "train", "network-export", "single-tf", "ccc", "simulation"):
+        assert command in help_text
+    with pytest.raises(SystemExit) as exit_info:
+        main(["network-export", "--help"])
+    assert exit_info.value.code == 0
+    assert "usage: draft network-export" in capsys.readouterr().out
+
+
+def test_draft_requires_input_mode_for_downstream_commands(tmp_path: Path) -> None:
+    import pytest
+
+    from draft_paired.workflow_cli import main
+
+    config = tmp_path / "run.yaml"
+    config.write_text("lineage: lineage1\n", encoding="utf-8")
+    with pytest.raises(SystemExit, match="input_mode"):
+        main(["network-export", "--config", str(config)])

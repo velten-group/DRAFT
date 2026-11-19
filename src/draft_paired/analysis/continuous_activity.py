@@ -25,12 +25,7 @@ def _section(config: dict[str, Any], key: str) -> dict[str, Any]:
 
 
 def _default_dense_file_patterns() -> list[str]:
-    return [
-        "TF_TG_dense_t*.tsv",
-        "t*_TF-TG.tsv",
-        "TF_TG_globalTopK_rescue_dense_*.tsv",
-        "TF_TG_top10000_*.tsv",
-    ]
+    return ["TF_TG_dense_t*.tsv"]
 
 
 def _continuous_activity_settings(config: dict[str, Any]) -> dict[str, Any]:
@@ -86,24 +81,13 @@ def _parse_time_label(value: str) -> float | None:
 
 
 def extract_time_from_filename(path: str | Path) -> float | None:
-    base = Path(path).name
-    patterns = [
-        r"^TF_TG_dense_t(.+)\.tsv$",
-        r"^t([0-9]+(?:\.[0-9]+)?)_TF-TG\.tsv$",
-        r"^TF_TG_globalTopK_rescue_dense_(.+)\.tsv$",
-        r"^TF_TG_top10000_(.+)\.tsv$",
-    ]
-    for pattern in patterns:
-        match = re.match(pattern, base)
-        if match:
-            raw = match.group(1)
-            if raw.startswith("t"):
-                raw = raw[1:]
-            try:
-                return float(raw)
-            except ValueError:
-                return None
-    return None
+    match = re.match(r"^TF_TG_dense_t(.+)\.tsv$", Path(path).name)
+    if match is None:
+        return None
+    try:
+        return float(match.group(1))
+    except ValueError:
+        return None
 
 
 def gaussian_smooth_1d(y: np.ndarray, t: np.ndarray, sigma: float) -> np.ndarray:

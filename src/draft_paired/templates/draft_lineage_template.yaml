@@ -1,21 +1,22 @@
-# Generic workflow: choose input paths, topology and optional outputs for your dataset.
+# Paired RNA/ATAC (same cells) with TF-RE and RE-TG priors, in the lineage folder layout of the README.
 config_version: 2
 lineage: lineage1
-lineage_data_dir: data/raw/${lineage}
+base_dir: .
+lineage_data_dir: data/${lineage}
 result_root: result/${lineage}
 output_dir: ${result_root}/train
 data:
-  tf_list: data/raw/TF.tsv
-  tg_list: data/raw/TG.tsv
-  re_list: data/raw/RE.txt
-  rna_h5ad: ${lineage_data_dir}/${lineage}_rna.h5ad
+  rna_h5ad: ${lineage_data_dir}/rna.h5ad
   rna_layer: lognorm  # Preferred layer; falls back to X. null selects X.
-  atac_h5ad: ${lineage_data_dir}/${lineage}_atac.h5ad
+  atac_h5ad: ${lineage_data_dir}/atac.h5ad
   atac_layer: counts
-  tf_re_prior: data/raw/TF_RE_prior.tsv
-  re_tg_prior: data/raw/RE_TG_prior.tsv
-  annotation: ${lineage_data_dir}/${lineage}_cell_annotation.csv
-  tree: ${lineage_data_dir}/${lineage}_tree.csv
+  annotation: ${lineage_data_dir}/rna_cells.tsv  # Cell labels; RNA and ATAC share cells.
+  tree: ${lineage_data_dir}/tree.tsv
+  tf_list: ${lineage_data_dir}/TF.tsv
+  tg_list: ${lineage_data_dir}/TG.tsv
+  tf_re_prior: ${lineage_data_dir}/TF_RE.tsv
+  re_tg_prior: ${lineage_data_dir}/RE_TG.tsv
+  re_list: ${lineage_data_dir}/RE.txt  # ATAC peaks used as REs, one per line.
 model:
   hidden_channels: 64
   out_channels: 64

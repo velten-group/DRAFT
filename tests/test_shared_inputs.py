@@ -114,7 +114,7 @@ def test_independent_atac_cells_generate_staged_prior_and_shared_training_inputs
         prepare_stage_prior(cfg, "prepared")
 
 
-def test_layer_selection_keeps_historical_unpaired_x_and_accepts_same_gene_tables(
+def test_layer_selection_falls_back_to_x_and_accepts_same_gene_tables(
     tmp_path,
 ):
     from draft_paired.utils import load_yaml_config
@@ -124,18 +124,18 @@ def test_layer_selection_keeps_historical_unpaired_x_and_accepts_same_gene_table
     prepared = load_yaml_config(result["config_path"])
     normalized = unpaired_inputs(prepared)
     prepared["data"].pop("rna_layer")
-    historical = unpaired_inputs(prepared)
-    assert not np.array_equal(normalized.expr_df.values, historical.expr_df.values)
-    assert (historical.expr_df.values == 1).all()
+    x_values = unpaired_inputs(prepared)
+    assert not np.array_equal(normalized.expr_df.values, x_values.expr_df.values)
+    assert (x_values.expr_df.values == 1).all()
     prepared["data"]["rna_layer"] = "absent_preferred_layer"
-    pd.testing.assert_frame_equal(historical.expr_df, unpaired_inputs(prepared).expr_df)
+    pd.testing.assert_frame_equal(x_values.expr_df, unpaired_inputs(prepared).expr_df)
 
 
 @pytest.mark.parametrize(
     "content",
     ["id1\nid2\n", "gene_id\nid1\nid2\n", "gene_id\tgene_name\nid1\tA\nid2\tB\n"],
 )
-def test_gene_tables_and_historical_lists_do_not_lose_first_gene(tmp_path, content):
+def test_gene_tables_and_headerless_lists_do_not_lose_first_gene(tmp_path, content):
     path = tmp_path / "genes.tsv"
     path.write_text(content)
     assert read_gene_table(path).gene_id.tolist() == ["id1", "id2"]
@@ -200,14 +200,14 @@ def test_prior_preparation_preserves_supplied_scopes(tmp_path):
     assert result["report"]["scope_policy"]["TF"] == "preserved supplied scope"
 
 
-def test_generic_annotation_uses_canonical_groups_when_historical_columns_coexist(
+def test_generic_annotation_uses_canonical_groups_when_other_columns_coexist(
     tmp_path,
 ):
     cfg = inputs(tmp_path)
     cfg["data"]["atac_h5ad"] = "paired_atac.h5ad"
     annotation = pd.read_csv(tmp_path / "rna_annotation.tsv", sep="\t")
     annotation["cell_type"] = annotation["node_id"]
-    annotation["GEX_latent_time_bins_annotated"] = "unused_historical_group"
+    annotation["GEX_latent_time_bins_annotated"] = "unused_group"
     annotation.to_csv(tmp_path / "rna_annotation.tsv", sep="\t", index=False)
     assert paired_inputs(cfg)["anno"].cell_type.tolist() == [
         "early",

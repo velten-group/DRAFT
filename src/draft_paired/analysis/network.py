@@ -1215,37 +1215,20 @@ def export_lineage_networks(config_path: str | Path, *, dense: bool = False) -> 
 
 def discover_network_time_indices(network_dir: str | Path) -> list[int]:
     directory = Path(network_dir)
-    patterns = [
-        "t*_TF_TG.tsv",
-        "t*_TF-TG.tsv",
-        "t*_TF_TG_globalTopK_rescue.tsv",
-        "t*_TF_TG_top10000.tsv",
-    ]
     time_indices: set[int] = set()
-    for pattern in patterns:
-        for path in directory.glob(pattern):
-            match = re.search(
-                r"t(\d+)(?:\.\d+)?_(?:TF-TG|TF_TG|TF_TG_(?:globalTopK_rescue|top10000))\.tsv$",
-                path.name,
-            )
-            if match:
-                time_indices.add(int(match.group(1)))
+    for path in directory.glob("t*_TF_TG.tsv"):
+        match = re.search(r"t(\d+)_TF_TG\.tsv$", path.name)
+        if match:
+            time_indices.add(int(match.group(1)))
     if not time_indices:
         raise FileNotFoundError(f"No exported TF-TG network files were found under {directory}.")
     return sorted(time_indices)
 
 
 def load_exported_tftg_df(network_dir: str | Path, time_idx: int) -> pd.DataFrame:
-    directory = Path(network_dir)
-    candidates = [
-        directory / f"t{time_idx:02d}_TF_TG.tsv",
-        directory / f"t{time_idx:02d}_TF_TG_globalTopK_rescue.tsv",
-        directory / f"t{time_idx:02d}_TF_TG_top10000.tsv",
-        directory / f"t{time_idx:02d}_TF-TG.tsv",
-    ]
-    path = next((item for item in candidates if item.exists()), None)
-    if path is None:
-        raise FileNotFoundError(f"No exported TF-TG file was found for time index {time_idx} under {directory}.")
+    path = Path(network_dir) / f"t{time_idx:02d}_TF_TG.tsv"
+    if not path.exists():
+        raise FileNotFoundError(f"No exported TF-TG file was found for time index {time_idx}: {path}")
     frame = pd.read_csv(path, sep="\t")
     frame.columns = [str(column).strip() for column in frame.columns]
     if "TF" in frame.columns and "TF_name" not in frame.columns:
@@ -1273,15 +1256,9 @@ def load_exported_tftg_df(network_dir: str | Path, time_idx: int) -> pd.DataFram
 
 
 def load_exported_tgre_df(network_dir: str | Path, time_idx: int) -> pd.DataFrame:
-    directory = Path(network_dir)
-    candidates = [
-        directory / f"t{time_idx:02d}_TF_RE_TG.tsv",
-        directory / f"t{time_idx:02d}_TG_RE_nearest10_top2_per_pair.tsv",
-        directory / f"t{time_idx:02d}_TF-RE-TG.tsv",
-    ]
-    path = next((item for item in candidates if item.exists()), None)
-    if path is None:
-        raise FileNotFoundError(candidates[0])
+    path = Path(network_dir) / f"t{time_idx:02d}_TF_RE_TG.tsv"
+    if not path.exists():
+        raise FileNotFoundError(path)
     return pd.read_csv(path, sep="\t")
 
 

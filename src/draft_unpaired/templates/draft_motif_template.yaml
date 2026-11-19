@@ -4,18 +4,18 @@
 config_version: 2
 lineage: lineage1
 base_dir: .
-lineage_data_dir: data/raw/${lineage}
+lineage_data_dir: data/${lineage}
 result_root: result/${lineage}
 data:
-  tf_list: ${lineage_data_dir}/${lineage}_TF.tsv
-  tg_list: ${lineage_data_dir}/${lineage}_TG.tsv
-  rna_h5ad: ${lineage_data_dir}/${lineage}_rna.h5ad
+  rna_h5ad: ${lineage_data_dir}/rna.h5ad
   rna_layer: lognorm
-  atac_h5ad: ${lineage_data_dir}/${lineage}_atac.h5ad
+  atac_h5ad: ${lineage_data_dir}/atac.h5ad
   atac_layer: counts
-  annotation: null
-  atac_annotation: null
-  tree: ${lineage_data_dir}/${lineage}_tree.csv
+  annotation: null  # RNA cell labels from obs cell_type, or ${lineage_data_dir}/rna_cells.tsv.
+  atac_annotation: null  # ATAC cell labels from obs cell_type, or ${lineage_data_dir}/atac_cells.tsv.
+  tree: ${lineage_data_dir}/tree.tsv
+  tf_list: ${lineage_data_dir}/TF.tsv
+  tg_list: ${lineage_data_dir}/TG.tsv
   prior_score_threshold: 0.1
   stage_peaks: ${lineage_data_dir}/stage_peaks.tsv
   genome_assembly: null

@@ -25,63 +25,29 @@ class InputPaths:
     def from_config(cls, config: dict[str, Any]) -> "InputPaths":
         data = config.get("data", {})
         base_dir = Path(config.get("base_dir", ".")).expanduser().resolve()
-        lineage_value = str(config.get("lineage", "")).strip().lower()
-        if int(config.get("config_version", 1)) >= 2:
-            lineage_prefix = lineage_value or "lineage1"
-        elif lineage_value in {"soma", "somatic"}:
-            lineage_prefix = "soma"
-        elif lineage_value in {"germ", "germline"}:
-            lineage_prefix = "germ"
-        else:
-            lineage_prefix = None
+        lineage = str(config.get("lineage", "")).strip() or "lineage1"
+        folder = str(config.get("lineage_data_dir") or f"data/{lineage}")
 
-        def _resolve(key: str, *defaults: str) -> Path:
-            candidates = [str(data[key])] if key in data else [item for item in defaults if item]
-            if int(config.get("config_version", 1)) >= 2 and key not in data:
-                candidates = candidates[:1]
-            resolved_fallback: Path | None = None
-            for candidate in candidates:
-                target = (base_dir / candidate).resolve()
-                if resolved_fallback is None:
-                    resolved_fallback = target
-                if target.exists():
-                    return target
+        def _resolve(key: str, name: str) -> Path:
+            """Path from the config, or the file `name` in the lineage folder."""
+            target = (base_dir / str(data[key] if key in data else f"{folder}/{name}")).resolve()
+            if not target.exists():
                 copy = resolve_copy_suffix_path(target)
                 if copy is not None:
                     return copy.resolve()
-            return resolved_fallback if resolved_fallback is not None else base_dir.resolve()
+            return target
 
         return cls(
             base_dir=base_dir,
-            tf_list=_resolve("tf_list", "data/raw/TF.tsv", "TF.tsv"),
-            tg_list=_resolve("tg_list", "data/raw/TG.tsv", "TG.tsv"),
-            re_list=_resolve("re_list", "data/raw/RE.txt", "RE.txt"),
-            rna_h5ad=_resolve(
-                "rna_h5ad",
-                f"data/raw/{lineage_prefix}/{lineage_prefix}_rna.h5ad" if lineage_prefix else "",
-                "data/raw/A_rna_focus.h5ad",
-                "A_rna_focus.h5ad",
-            ),
-            atac_h5ad=_resolve(
-                "atac_h5ad",
-                f"data/raw/{lineage_prefix}/{lineage_prefix}_atac.h5ad" if lineage_prefix else "",
-                "data/raw/B_atac_focus.h5ad",
-                "B_atac_focus.h5ad",
-            ),
-            re_tg_prior=_resolve("re_tg_prior", "data/raw/RE_TG_100kb.tsv", "RE_TG_100kb.tsv"),
-            tf_re_prior=_resolve("tf_re_prior", "data/raw/TF_RE_top3pct_edges.tsv", "TF_RE_top3pct_edges.tsv"),
-            annotation=_resolve(
-                "annotation",
-                f"data/raw/{lineage_prefix}/{lineage_prefix}_cell_annotation.csv" if lineage_prefix else "",
-                "data/raw/cell_annotation.csv",
-                "cell_annotation.csv",
-            ),
-            tree=_resolve(
-                "tree",
-                f"data/raw/{lineage_prefix}/{lineage_prefix}_tree.csv" if lineage_prefix else "",
-                "data/raw/tree.csv",
-                "tree.csv",
-            ),
+            tf_list=_resolve("tf_list", "TF.tsv"),
+            tg_list=_resolve("tg_list", "TG.tsv"),
+            re_list=_resolve("re_list", "RE.txt"),
+            rna_h5ad=_resolve("rna_h5ad", "rna.h5ad"),
+            atac_h5ad=_resolve("atac_h5ad", "atac.h5ad"),
+            re_tg_prior=_resolve("re_tg_prior", "RE_TG.tsv"),
+            tf_re_prior=_resolve("tf_re_prior", "TF_RE.tsv"),
+            annotation=_resolve("annotation", "rna_cells.tsv"),
+            tree=_resolve("tree", "tree.tsv"),
         )
 
 

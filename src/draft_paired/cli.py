@@ -44,8 +44,8 @@ def _result_location(command: str, result: dict[str, Any]) -> str | None:
     return result.get("output_dir")
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="draft_paired")
+def build_parser(prog: str = "draft_paired") -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog=prog)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     preprocess = subparsers.add_parser("preprocess", help="Prepare stage graphs and a shared training config")
@@ -184,8 +184,8 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = build_parser()
+def main(argv: list[str] | None = None, prog: str = "draft_paired") -> int:
+    parser = build_parser(prog)
     args = parser.parse_args(argv)
     if args.command not in {"init-config", "simulation"}:
         try:

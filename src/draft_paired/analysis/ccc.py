@@ -34,13 +34,7 @@ except Exception:
     HAS_SCIPY = False
 
 
-EDGE_GLOBS = (
-    "TF_TG_dense_t*.tsv",
-    "TF_TG_globalTopK_rescue_dense_*.tsv",
-    "TF_TG_top*.tsv",
-    "TF_TG_*.tsv",
-    "t*_TF-TG.tsv",
-)
+EDGE_GLOBS = ("TF_TG_dense_t*.tsv",)
 
 
 def _section(config: dict[str, Any], key: str) -> dict[str, Any]:
@@ -171,9 +165,6 @@ def _clean_gene_names(series: pd.Series) -> pd.Series:
 def parse_time_from_filename(path: str | Path) -> float:
     stem = Path(path).stem
     match = re.match(r"^TF_TG_dense_t([-+]?[0-9]*\.?[0-9]+)$", stem)
-    if match:
-        return float(match.group(1))
-    match = re.match(r"^t([-+]?[0-9]*\.?[0-9]+)_(?:TF-TG|TF_TG.*)$", stem)
     if match:
         return float(match.group(1))
     label = stem.split("_")[-1]

@@ -15,33 +15,23 @@ Python 3.10 or newer:
 git clone https://github.com/velten-group/DRAFT.git
 cd DRAFT
 pip install -e ".[full]"
-```
-
-## Quick start
-
-Bundled simulation example (results in `result/simulation/`):
-
-```bash
-draft_paired init-config --kind simulation
-draft_paired simulation --config configs/draft_simulation_template.yaml
-```
-
-Preprocess and train one lineage; the repository's `data/lineage1/` holds a small
-example to replace with your own files (`--mode paired` for matched cells):
-
-```bash
-draft preprocess --input-dir data/lineage1 --mode unpaired --output prepared/lineage1
-draft train --config prepared/lineage1/train.yaml
+draft simulation      # quick start on bundled simulated data; results in result/simulation/
 ```
 
 ## Documentation
 
-- [README](https://github.com/velten-group/DRAFT#readme): tutorial and
+- [README](https://github.com/velten-group/DRAFT#readme): tutorial on example
+  data (preprocess, train, networks, regulons, two-lineage comparison) and
   [manuscript reproduction](https://github.com/velten-group/DRAFT#reproducing-the-manuscript)
 - [Input guide](https://github.com/velten-group/DRAFT/blob/main/docs/input_formats.md)
-- [Network export and downstream analyses](https://github.com/velten-group/DRAFT/blob/main/docs/downstream.md)
-  and the [interactive example](https://github.com/velten-group/DRAFT/blob/main/docs/downstream.ipynb)
+- [Downstream analyses](https://github.com/velten-group/DRAFT/blob/main/docs/downstream.md)
 - Manuscript analyses and figures: [DRAFT-analysis](https://github.com/velten-group/DRAFT-analysis)
+
+## Citation
+
+Zhang Z, Santhi Sekhar P, van Nierop y Sanchez P, Lohmann I, Velten B. DRAFT: graph-recurrent learning of
+dynamic gene regulatory networks along single-cell multi-omics trajectories. bioRxiv (2026).
+[doi:10.64898/2026.11.17.767145](https://doi.org/10.64898/2026.11.17.767145)
 
 ## License and contact
 

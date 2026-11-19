@@ -29,11 +29,11 @@ def test_generic_lineage_names_preserve_ccc_scores_and_alignment(tmp_path):
         tmp_path / "lr.csv", index=False
     )
     alignment = pd.DataFrame({"soma_tau": [0, 0.5, 1], "germ_tau": [0, 0.5, 1]})
-    alignment.to_csv(tmp_path / "old_path.tsv", sep="\t", index=False)
+    alignment.to_csv(tmp_path / "named_path.tsv", sep="\t", index=False)
     alignment.rename(columns={"soma_tau": "Alpha_tau", "germ_tau": "Beta_tau"}).to_csv(
-        tmp_path / "new_path.tsv", sep="\t", index=False
+        tmp_path / "generic_path.tsv", sep="\t", index=False
     )
-    old = {
+    named = {
         "base_dir": str(tmp_path),
         "data": {
             "rna_h5ad": "rna.h5ad",
@@ -42,9 +42,9 @@ def test_generic_lineage_names_preserve_ccc_scores_and_alignment(tmp_path):
         },
         "ccc": {
             "ccc_csv": "lr.csv",
-            "alignment_path": "old_path.tsv",
+            "alignment_path": "named_path.tsv",
             "save_fig": False,
-            "output_dir": "old",
+            "output_dir": "named",
             "directions": ["soma_to_germline", "germline_to_soma"],
             **{
                 key: {
@@ -56,10 +56,10 @@ def test_generic_lineage_names_preserve_ccc_scores_and_alignment(tmp_path):
             },
         },
     }
-    reference = run_ccc_analysis_from_config(old)
-    new = copy.deepcopy(old)
-    section = new["ccc"]
-    section.update(output_dir="generic", alignment_path="new_path.tsv")
+    reference = run_ccc_analysis_from_config(named)
+    generic = copy.deepcopy(named)
+    section = generic["ccc"]
+    section.update(output_dir="generic", alignment_path="generic_path.tsv")
     section["lineages"] = {"Alpha": section.pop("soma"), "Beta": section.pop("germ")}
     section["lineages"]["Beta"]["input_mode"] = (
         "unpaired"  # Imported scores are independent of input mode.
@@ -68,7 +68,7 @@ def test_generic_lineage_names_preserve_ccc_scores_and_alignment(tmp_path):
         {"sender": "Alpha", "receiver": "Beta"},
         {"sender": "Beta", "receiver": "Alpha"},
     ]
-    current = run_ccc_analysis_from_config(new)
+    current = run_ccc_analysis_from_config(generic)
     mapping = {"Alpha_to_Beta": "soma_to_germline", "Beta_to_Alpha": "germline_to_soma"}
     for key in ["pairs_path", "curves_path"]:
         a, b = pd.read_csv(reference[key], sep="\t"), pd.read_csv(current[key], sep="\t")
