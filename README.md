@@ -98,8 +98,7 @@ draft topic --config prepared/lineage1/train.yaml
 ```
 
 Results go to `result/lineage1/` (`reproduce/`, `network/`, `edge_cluster/`,
-`topic/`). On the small example, `network-export` warns that it kept each
-stage's top 1% of TF-TG pairs ([why](docs/downstream.md#draft-network-export)).
+`topic/`).
 
 ### 4. Inspect TF regulons
 

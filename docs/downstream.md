@@ -27,10 +27,6 @@ the stage-by-stage distance matrix of the TF-TG networks
 Writes `t<stage>_TF_TG.tsv`, one TF-TG edge table per stage (paired also
 `t<stage>_TF_RE_TG.tsv`), and per-stage counts of active genes and kept edges.
 
-- Each stage keeps the TF-TG edges scoring at least `network.min_score_keep`.
-  If fewer than 1% of the stage's TF-TG pairs reach it, that stage keeps its
-  top 1% instead and a warning is printed; `--set network.min_edge_fraction=0`
-  turns this off (`network.dense.*` for interpolated networks).
 - `--dense` also saves interpolated networks in `network_dense/`
   (`draft ccc` and `draft continuous-activity` compute them in memory otherwise).
 - Paired export needs the [TG coordinates](input_formats.md#tf-and-tg-lists).
