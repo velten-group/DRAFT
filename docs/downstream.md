@@ -40,8 +40,8 @@ Both read `network/`.
 | `edge_cluster/` | `edge_clusters_*.csv` (edge → cluster), stage-pattern tables, TF/TG summaries, figures |
 | `topic/` | `topic_x_cluster_lda.csv`, `topic_x_cluster_prop_lda.csv`, figures |
 
-**GO enrichment of topics.** Install `pip install -e ".[full,enrich]"`, then
-pass an organism and an [Enrichr library](https://gseapy.readthedocs.io/en/latest/gseapy_example.html#enrichr-gene-set-libraries):
+**GO enrichment of topics.** Install `pip install "draft-grn[full,enrich]"`
+(in a clone: `pip install -e ".[full,enrich]"`), then pass an organism and an [Enrichr library](https://gseapy.readthedocs.io/en/latest/gseapy_example.html#enrichr-gene-set-libraries):
 
 ```bash
 draft topic --config prepared/lineage1/train.yaml --organism Human --gene-sets GO_Biological_Process_2023

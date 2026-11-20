@@ -4,8 +4,7 @@ DRAFT infers dynamic gene regulatory networks from single-cell RNA and ATAC
 data along a lineage tree, and compares two lineages by developmental
 alignment (DTW) and cell-cell communication (CCC).
 
-> **Status:** DRAFT is being packaged for PyPI. Until the release, install it
-> from this repository as shown below. Commands and options may still change.
+> **Status:** early release; commands and options may still change.
 
 ![DRAFT model overview](docs/model.png)
 
@@ -21,7 +20,15 @@ preprocessing step:
 
 ## Installation
 
-Python 3.10 or newer:
+Python 3.10 or newer. From PyPI:
+
+```bash
+pip install "draft-grn[full]"
+```
+
+The tutorial below and the manuscript reproduction use files in this
+repository (`data/`, `scripts/`). For them, install from a clone and run all
+commands from the `DRAFT/` directory:
 
 ```bash
 git clone https://github.com/velten-group/DRAFT.git
@@ -32,7 +39,7 @@ pip install -e ".[full]"
 `[full]` installs everything the workflow below needs. Optional extras:
 `[enrich]` adds GO enrichment of regulatory topics, `[tutorial]` runs the
 [interactive example](docs/downstream.ipynb). A GPU speeds up training but is
-not required for the examples. Run all commands from this `DRAFT/` directory.
+not required for the examples.
 
 ## Quick start
 
@@ -134,7 +141,7 @@ lineage's early window. Ligand and receptor genes must be in both lineages'
 Retrains the mouse and Drosophila models; a GPU with at least **48 GB** is
 recommended.
 
-1. Install DRAFT as above.
+1. Install DRAFT from a clone as above.
 2. Download `mouse_graphs.pt`, `dro_germ_graphs.pt` and `soma_graphs.pt` from
    [Zenodo](https://doi.org/10.5281/zenodo.23678662) into `DRAFT/graph_data/`.
 3. Train:
