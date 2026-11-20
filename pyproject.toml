@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "draft"
+name = "draft-grn"
 version = "0.1.0"
-description = "DRAFT workflows for paired and unpaired lineage trajectories."
+description = "Dynamic gene regulatory networks from paired or unpaired single-cell RNA and ATAC data along lineage trees."
 readme = { file = "docs/README_PYPI.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 license = { text = "MIT" }

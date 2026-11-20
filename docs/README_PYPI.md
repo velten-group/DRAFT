@@ -4,18 +4,26 @@ DRAFT infers dynamic gene regulatory networks from paired or unpaired
 single-cell RNA and ATAC data along a lineage tree, and compares two lineages
 by developmental alignment (DTW) and cell-cell communication (CCC).
 
-> **Status:** DRAFT is being packaged for PyPI. Until the release, install it
-> from the GitHub repository as shown below. Commands and options may still change.
+> **Status:** early release; commands and options may still change.
 
 ## Installation
 
 Python 3.10 or newer:
 
 ```bash
+pip install "draft-grn[full]"
+draft simulation      # quick start on bundled simulated data; results in result/simulation/
+```
+
+Optional extras: `[enrich]` adds GO enrichment of regulatory topics, `[tutorial]`
+runs the interactive example. The tutorial's example inputs (`data/`) and the
+manuscript reproduction script are in the GitHub repository; to use them, install
+from a clone:
+
+```bash
 git clone https://github.com/velten-group/DRAFT.git
 cd DRAFT
 pip install -e ".[full]"
-draft simulation      # quick start on bundled simulated data; results in result/simulation/
 ```
 
 ## Documentation
