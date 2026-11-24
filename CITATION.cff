@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use DRAFT, please cite the article below."
+type: software
+title: "DRAFT"
+abstract: "Dynamic gene regulatory networks from paired or unpaired single-cell RNA and ATAC data along lineage trees."
+authors:
+  - family-names: Zhang
+    given-names: Zehua
+    affiliation: "Heidelberg University, Centre for Organismal Studies"
+version: 0.1.0
+date-released: 2026-11-20
+license: MIT
+repository-code: "https://github.com/velten-group/DRAFT"
+url: "https://pypi.org/project/draft-grn/"
+keywords:
+  - single-cell
+  - multiomics
+  - gene regulatory network
+  - graph neural network
+  - trajectory
+preferred-citation:
+  type: article
+  title: "DRAFT: graph-recurrent learning of dynamic gene regulatory networks along single-cell multi-omics trajectories"
+  authors:
+    - family-names: Zhang
+      given-names: Zehua
+    - family-names: Santhi Sekhar
+      given-names: Pallavi
+    - family-names: van Nierop y Sanchez
+      given-names: Patrick
+    - family-names: Lohmann
+      given-names: Ingrid
+    - family-names: Velten
+      given-names: Britta
+  journal: bioRxiv
+  year: 2026
+  doi: 10.64898/2026.11.17.767145
+  url: "https://doi.org/10.64898/2026.11.17.767145"
