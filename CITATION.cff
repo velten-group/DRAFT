@@ -7,8 +7,8 @@ authors:
   - family-names: Zhang
     given-names: Zehua
     affiliation: "Heidelberg University, Centre for Organismal Studies"
-version: 0.1.0
-date-released: 2026-11-20
+version: 0.1.1
+date-released: 2026-11-25
 license: MIT
 repository-code: "https://github.com/velten-group/DRAFT"
 url: "https://pypi.org/project/draft-grn/"
