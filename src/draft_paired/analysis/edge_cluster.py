@@ -325,7 +325,7 @@ def _tf_centrality_summary(
         sub = stats_tf[stats_tf["edge_cluster"] == edge_cluster].copy()
         if sub.empty:
             continue
-        sub.sort_values(["degree", "mean_score", "tf_name"], ascending=[False, False, True], inplace=True, kind="mergesort")
+        sub = sub.sort_values(["degree", "mean_score", "tf_name"], ascending=[False, False, True], kind="mergesort")
         sub = sub.head(settings["topk_per_ec"]).reset_index(drop=True)
         sub.insert(1, "rank", np.arange(1, len(sub) + 1))
         spec_row = df_ec_spec[df_ec_spec["edge_cluster"] == edge_cluster]

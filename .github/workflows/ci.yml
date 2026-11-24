@@ -6,9 +6,43 @@ on:
       - main
       - master
   pull_request:
+  schedule:
+    - cron: "0 4 * * 1"
+  workflow_dispatch:
 
 jobs:
-  test-and-release-check:
+  tests:
+    name: tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install CPU PyTorch
+        run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install project with all workflow and dev dependencies
+        run: python -m pip install -e ".[full,dev]"
+
+      - name: Run tests
+        run: pytest -q
+
+  minimum-versions:
+    name: tests (minimum dependency versions)
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -19,7 +53,32 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.10"
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install CPU PyTorch
+        run: python -m pip install "torch==2.1.0" --index-url https://download.pytorch.org/whl/cpu
+
+      - name: Install project at the minimum versions
+        run: python -m pip install -e ".[full,dev]" -c dev/minimum_versions.txt
+
+      - name: Run tests
+        run: pytest -q
+
+  release-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
@@ -28,10 +87,7 @@ jobs:
         run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
 
       - name: Install project with workflow and dev dependencies
-        run: python -m pip install -e .[dev,paired]
-
-      - name: Run smoke and method regression tests
-        run: pytest -q
+        run: python -m pip install -e ".[dev,paired]"
 
       - name: Run release validation chain
         run: python dev/release_check.py --work-root "${{ runner.temp }}/draft-release-check"

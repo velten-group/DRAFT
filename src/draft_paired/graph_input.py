@@ -17,7 +17,7 @@ def has_graph_input(config: dict[str, Any]) -> bool:
 
 def load_graph_artifacts(config: dict[str, Any], family: str) -> dict[str, Any]:
     path = resolve_config_path(config, config["data"]["graphs"])
-    payload = torch.load(path, map_location="cpu", weights_only=False, mmap=True)
+    payload = torch.load(str(path), map_location="cpu", weights_only=False, mmap=True)
     required = {
         "graphs",
         "time_names",

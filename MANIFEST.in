@@ -11,7 +11,7 @@ include docs/model.png
 
 include scripts/install_simulation_r.R
 include scripts/train_reproduction.py
-recursive-include dev *.py *.md
+recursive-include dev *.py *.md *.txt
 
 recursive-include src *.py
 recursive-include src *.yaml

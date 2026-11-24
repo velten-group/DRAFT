@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,8 @@ version = "0.1.0"
 description = "Dynamic gene regulatory networks from paired or unpaired single-cell RNA and ATAC data along lineage trees."
 readme = { file = "docs/README_PYPI.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
   { name = "Zehua Zhang", email = "zehua.zhang@cos.uni-heidelberg.de" }
 ]
@@ -19,12 +20,13 @@ keywords = ["single-cell", "graph-neural-network", "dynamic-gene-regulatory-netw
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 dependencies = [
@@ -44,7 +46,7 @@ paired = [
   "pandas>=2.0",
   "torch>=2.1",
   "torch-geometric>=2.5",
-  "anndata>=0.10",
+  "anndata>=0.11",
   "scipy>=1.11",
   "matplotlib>=3.8",
   "scikit-learn>=1.4",
@@ -55,31 +57,31 @@ unpaired = [
   "pandas>=2.0",
   "torch>=2.1",
   "torch-geometric>=2.5",
-  "anndata>=0.10",
+  "anndata>=0.11",
   "scipy>=1.11",
   "matplotlib>=3.8",
   "scikit-learn>=1.4",
   "networkx>=3.2",
 ]
 full = [
-  "pybigtools>=0.3.0,<0.4",
+  "pybigtools>=0.3.0,<0.4; python_version < '3.14'",
   "numpy>=1.24",
   "pandas>=2.0",
   "torch>=2.1",
   "torch-geometric>=2.5",
-  "anndata>=0.10",
+  "anndata>=0.11",
   "scipy>=1.11",
   "matplotlib>=3.8",
   "scikit-learn>=1.4",
   "networkx>=3.2",
 ]
-prior = ["numpy>=1.24", "pandas>=2.0", "anndata>=0.10", "scipy>=1.11", "pybigtools>=0.3.0,<0.4"]
+prior = ["numpy>=1.24", "pandas>=2.0", "anndata>=0.11", "scipy>=1.11", "pybigtools>=0.3.0,<0.4; python_version < '3.14'"]
 
 dev = [
   "build>=1.2",
   "pytest>=8.0",
   "ruff>=0.6",
-  "twine>=5.1",
+  "twine>=6.1",
   "nbformat>=5.10",
   "nbclient>=0.10",
   "ipykernel>=6.29",
@@ -87,7 +89,7 @@ dev = [
 tutorial = ["nbformat>=5.10", "nbclient>=0.10", "ipykernel>=6.29"]
 release = [
   "build>=1.2",
-  "twine>=5.1",
+  "twine>=6.1",
 ]
 enrich = [
   "gseapy>=1.1",

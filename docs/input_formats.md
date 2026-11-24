@@ -207,6 +207,8 @@ only the priors.
 On first use (internet required), DRAFT queries JASPAR 2024 pre-scanned motif
 sites for your peaks and TFs and downloads the gene annotation. Files are
 cached in `data/resources/cache/` (`--set resources.cache_dir=PATH` changes it).
+Reading the JASPAR tracks needs pybigtools, which `[full]` installs on Python
+3.10-3.13; on newer Python, use [your own motif resources](#use-your-own-motif-resources).
 
 | Assembly | Motif sites | Gene annotation |
 |---|---|---|

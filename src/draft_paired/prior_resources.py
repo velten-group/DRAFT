@@ -205,7 +205,8 @@ def open_motif_track(source: str):
         import pybigtools
     except ImportError as exc:
         raise RuntimeError(
-            "Automatic motif retrieval needs pybigtools; install draft[prior] or draft[full]."
+            "Automatic motif retrieval needs pybigtools (Python 3.10-3.13; install draft-grn[full]); "
+            "otherwise supply resources.motif_instances and resources.motif_to_tf."
         ) from exc
     if source.startswith(("https://", "http://")):
         with HTTPRangeReader(source) as stream, pybigtools.open(stream) as reader:

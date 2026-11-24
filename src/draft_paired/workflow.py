@@ -14,7 +14,7 @@ def graph_input_mode(path: str | Path) -> str:
     """Identify a prepared input from its node roles, checking its mode metadata."""
     import torch
 
-    payload = torch.load(path, map_location="cpu", weights_only=False, mmap=True)
+    payload = torch.load(str(path), map_location="cpu", weights_only=False, mmap=True)
     if not isinstance(payload, dict) or not payload.get("graphs"):
         raise ValueError("Expected prepared stage graphs, not a model checkpoint.")
     nodes = set(payload["graphs"][0].node_types)
