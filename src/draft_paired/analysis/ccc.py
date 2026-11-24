@@ -473,11 +473,7 @@ def _tf_centrality(matrix: Any) -> np.ndarray:
 def _zscore_cols(
     values: np.ndarray, eps: float = 1e-12, rtol: float = 1e-6
 ) -> np.ndarray:
-    """Standardize columns; columns that are constant up to rounding become zero.
-
-    The leading singular value of a degree-normalized network is 1 at every
-    stage. Its float32 rounding differences are not standardized into a feature.
-    """
+    """Standardize columns; columns that are constant up to float32 rounding become zero."""
     mean = values.mean(axis=0, keepdims=True)
     std = values.std(axis=0, keepdims=True)
     constant = std <= np.maximum(eps, rtol * np.abs(mean))

@@ -40,7 +40,6 @@ if (any(initial > potential) || times < 2L) stop('Invalid potential graph/stage 
 context <- new.env()
 
 # Supply an equal-size cell grid per segment to the native Brownian sampler.
-# Equal stage sizes give the encoder consistent feature widths.
 native_sample_edge <- get('SampleEdge', asNamespace('scMultiSim'))
 assignInNamespace('SampleEdge', function(edge, depth, anc_state, edges, ncells, step_size, t_sample=NA) {
   if (is.na(t_sample[1])) {

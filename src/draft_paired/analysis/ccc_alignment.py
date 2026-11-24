@@ -25,8 +25,8 @@ def fingerprint_dtw(
 ) -> np.ndarray:
     """Return normalized second-lineage time for each first-lineage fingerprint.
 
-    Fingerprints are standardized by the caller. Entropy is an explicit
-    sensitivity option; weight zero never reads or validates entropy arrays.
+    Fingerprints are standardized by the caller. Entropy is optional; with
+    weight zero, entropy arrays are not read.
     """
     from .ccc import dtw_path, smooth_warp_d2_monotone
 
